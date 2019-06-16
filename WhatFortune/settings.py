@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'rest_framework_swagger',
 ]
 
 MIDDLEWARE = [
@@ -129,3 +130,4 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',)
 }
+ALLOWED_HOSTS = ['*']

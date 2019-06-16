@@ -1,15 +1,14 @@
-var testApp = angular.module("testApp", []);
+var testApp = angular.module("testApp", ['ngRoute']);
 testApp.config(function ($interpolateProvider) {
     $interpolateProvider.startSymbol('[[');
     $interpolateProvider.endSymbol(']]');
 });
-testApp.controller("testController", function ($scope, $http, $timeout,) {
+testApp.controller("testController", function ($scope, $http, $timeout,$window) {
     var uuid = uuid();
     $scope.home = "This is the homepage";
     $scope.uuid = uuid;
 
     $scope.getRequest = function () {
-        console.log("I've been pressed!");
         $http.get("http://127.0.0.1:8000/api/fortune/count/", {
             headers: {
                 "Authorization": "Token 4cdf0ff1ce73836573336b63f912a4fe00b7fb44"
@@ -19,8 +18,9 @@ testApp.controller("testController", function ($scope, $http, $timeout,) {
             function successCallback(response) {
                 $scope.response = response;
                 getFortune(response.data['total']);
-                console.log($scope.uuid);
-            },
+                $scope.getDataTimer();
+
+                },
             function errorCallback(response) {
                 console.log("Unable to perform get request");
             }
@@ -47,16 +47,7 @@ testApp.controller("testController", function ($scope, $http, $timeout,) {
                 headers: {
                     "Authorization": "Token 4cdf0ff1ce73836573336b63f912a4fe00b7fb44"
                 }
-            }).then(
-            function successCallback(response) {
-                $timer = $timeout(function () {
-                    $scope.getData();
-                }, 1000)
-            },
-            function errorCallback(response) {
-                console.log("Unable to perform get request");
-            }
-        );
+            })
     }
 
 
@@ -75,8 +66,11 @@ testApp.controller("testController", function ($scope, $http, $timeout,) {
         return 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g, randomDigit);
     }
 
+    $scope.reloadRoute = function() {
+       $route.reload();
+    }
 
-    function hasShaken() {
+    $scope.getShaken = function () {
         $http.get("http://127.0.0.1:8000/api/givenFortunes/" + $scope.uuid, {
             headers: {
                 "Authorization": "Token 4cdf0ff1ce73836573336b63f912a4fe00b7fb44"
@@ -86,10 +80,11 @@ testApp.controller("testController", function ($scope, $http, $timeout,) {
             function successCallback(response) {
                 $scope.response = response;
                 if (response.data['has_shaken'] == true) {
-                    $scope.$apply(function () {
-                        $location.path('/');
-                        $window.location.reload();
-                    });
+                    $timeout.cancel($scope.shakenTimer);
+                    $window.location.reload();                }
+                else {
+                    $scope.getShakenTimer();
+
                 }
             },
             function errorCallback(response) {
@@ -111,25 +106,25 @@ testApp.controller("testController", function ($scope, $http, $timeout,) {
                     $http.get("http://127.0.0.1:8000/api/fort/" + response.data['fortune_word'], {
                         headers: {
                             "Authorization": "Token 4cdf0ff1ce73836573336b63f912a4fe00b7fb44"
-
                         }
                     }).then(
                         function successCallback(response) {
                             $scope.response = response;
-                            getFortune(response.data['total']);
                             window.alert('Your fortune for today is:' + response.data['fortune']);
-                            $timeout.cancel(timer);
-                            $scope.hasShaken();
-
-
+                            window.alert('Shake your phone for a new QR code!')
+                            $timeout.cancel($scope.timer);
+                            $scope.getShakenTimer();
                         },
                         function errorCallback(response) {
                             console.log("Unable to perform get request");
                         }
                     );
                 }
-
-                console.log("Yes! Checked the uuid again");
+                else {
+                    console.log("Yes! Checked the uuid again");
+                $scope.getDataTimer();
+                   // $scope.getData();
+                }
 
             },
             function errorCallback(response) {
@@ -138,10 +133,16 @@ testApp.controller("testController", function ($scope, $http, $timeout,) {
         );
     };
 
-    $scope.hasShakenTimer = function () {
-        timer = $timeout(function () {
+
+    $scope.getShakenTimer = function () {
+        $scope.timer = $timeout(function () {
+            $scope.getShaken();
+        }, 1000)
+    };
+
+    $scope.getDataTimer = function () {
+        $scope.timer = $timeout(function () {
             $scope.getData();
-            $scope.hasShaken();
         }, 1000)
     };
 

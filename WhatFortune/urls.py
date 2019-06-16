@@ -18,8 +18,10 @@ from django.urls import path, include
 from django.conf.urls import url, include
 from django.contrib.auth.models import User
 from rest_framework import routers, serializers, viewsets
-
+from rest_framework_swagger.renderers import SwaggerUIRenderer, OpenAPIRenderer
 # Serializers define the API representation.
+from rest_framework.schemas import get_schema_view
+
 from api.views import *
 
 
@@ -34,6 +36,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+schema_view = get_schema_view(title='Users API', renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer])
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
@@ -49,6 +52,7 @@ router.register(r'fortune/count', FortuneCount, basename='fortuneCount')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    url(r'docs/', schema_view, name="docs"),
     path('', include('fortuneteller.urls')),
     path('api-auth/', include('rest_framework.urls')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
