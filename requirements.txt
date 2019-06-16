@@ -1,0 +1,7 @@
+django
+djangorestframework
+qrcode
+pillow
+django-filter
+markdown
+django-cors-middleware
