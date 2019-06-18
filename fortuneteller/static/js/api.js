@@ -110,10 +110,10 @@ testApp.controller("testController", function ($scope, $http, $timeout,$window) 
                     }).then(
                         function successCallback(response) {
                             $scope.response = response;
-                            window.alert('Your fortune for today is:' + response.data['fortune']);
-                            window.alert('Shake your phone for a new QR code!')
+                            window.alert('Your fortune for today is: ' + response.data['fortune']);
+                            $window.location.reload();
                             $timeout.cancel($scope.timer);
-                            $scope.getShakenTimer();
+                            //$scope.getShakenTimer();
                         },
                         function errorCallback(response) {
                             console.log("Unable to perform get request");
