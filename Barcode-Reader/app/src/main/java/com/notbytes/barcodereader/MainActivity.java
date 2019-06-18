@@ -14,25 +14,26 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.notbytes.barcode_reader.BarcodeReaderActivity;
 import com.notbytes.barcode_reader.BarcodeReaderFragment;
 
-import org.json.JSONObject;
-
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
+
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.PATCH;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, BarcodeReaderFragment.BarcodeReaderListener {
     private static final int BARCODE_READER_ACTIVITY_REQUEST = 1208;
     private TextView mTvResult;
     private TextView mTvResultHeader;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +93,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, barcode.rawValue, Toast.LENGTH_SHORT).show();
             mTvResultHeader.setText("On Activity Result");
             mTvResult.setText(barcode.rawValue);
-            jsonParse(barcode.rawValue);
+            try {
+                connectAPI(barcode.rawValue);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }
@@ -123,24 +128,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onCameraPermissionDenied() {
         Toast.makeText(this, "Camera permission denied!", Toast.LENGTH_LONG).show();
     }
-    public void jsonParse(String qr_uuid) {
-        Map<String, String> postParam= new HashMap<String, String>();
-        postParam.put("is_used","true");
 
-        String url = "http://192.168.43.47:8000/api/givenFortunes/" + qr_uuid;
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, url,
-                new JSONObject(postParam),
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d(null, response.toString());
+    public void connectAPI(String the_uuid) throws IOException {
+        String header = "Token 4cdf0ff1ce73836573336b63f912a4fe00b7fb44";
+        String jsonBody = "is_used: true";
+        Put put =  new Put(false);
 
-                    }
-                }, new Response.ErrorListener() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://192.168.178.34:8000/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+            fortuneTellerAPI fortuneTellerAPI = retrofit.create(fortuneTellerAPI.class);
+
+        Call<PATCH> call = fortuneTellerAPI.getPatch(header, the_uuid, put);
+
+        call.enqueue(new Callback<PATCH>() {
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onResponse(Call<PATCH> call, Response<PATCH> response) {
+
+                if (!response.isSuccessful()){
+                    Log.e("Barcode","Code:"+response.code());
+                    return;
+                }
+                Log.e("barcode", response.message());
+            }
+
+            @Override
+            public void onFailure(Call<PATCH> call, Throwable t) {
+                Log.e("Barcode",t.getMessage());
+                Log.e("ha","nnfdf");
 
             }
         });
-    }
+
+
+}
 }
