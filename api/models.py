@@ -20,7 +20,7 @@ class MobileUser(models.Model):
 
 
 class GivenFortune(models.Model):
-    fortune_word = models.ForeignKey(Fortune, on_delete=models.CASCADE)
+    fortune_word = models.ForeignKey(fortunes, on_delete=models.CASCADE)
     is_used = models.BooleanField()
     unique_qr = models.TextField()
     has_shaken = models.BooleanField()
