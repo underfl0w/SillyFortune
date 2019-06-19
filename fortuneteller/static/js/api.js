@@ -9,7 +9,7 @@ testApp.controller("testController", function ($scope, $http, $timeout,$window) 
     $scope.uuid = uuid;
 
     $scope.getRequest = function () {
-        $http.get("http://127.0.0.1:8000/api/fortune/count/", {
+        $http.get("http://underfl0w.nl:8000/api/fortune/count/", {
             headers: {
                 "Authorization": "Token 4cdf0ff1ce73836573336b63f912a4fe00b7fb44"
 
@@ -36,7 +36,7 @@ testApp.controller("testController", function ($scope, $http, $timeout,$window) 
 
 
     function enrollFortunefunction(num, uuid) {
-        $http.post("http://127.0.0.1:8000/api/givenFortunes/",
+        $http.post("http://underfl0w.nl:8000/api/givenFortunes/",
             {
                 "fortune_word": num,
                 "is_used": false,
@@ -71,9 +71,9 @@ testApp.controller("testController", function ($scope, $http, $timeout,$window) 
     }
 
     $scope.getShaken = function () {
-        $http.get("http://127.0.0.1:8000/api/givenFortunes/" + $scope.uuid, {
+        $http.get("http://underfl0w.nl:8000/api/givenFortunes/" + $scope.uuid, {
             headers: {
-                "Authorization": "Token 4cdf0ff1ce73836573336b63f912a4fe00b7fb44"
+                "Authorization": "Token 78c258d07d5e62bed11ddc192524dc07af563b02"
 
             }
         }).then(
@@ -94,18 +94,18 @@ testApp.controller("testController", function ($scope, $http, $timeout,$window) 
     }
 
     $scope.getData = function () {
-        var url = 'http://127.0.0.1:8000/api/givenFortunes/' + $scope.uuid
+        var url = 'http://underfl0w.nl:8000/api/givenFortunes/' + $scope.uuid
         $http.get(url, {
             headers: {
-                "Authorization": "Token 4cdf0ff1ce73836573336b63f912a4fe00b7fb44"
+                "Authorization": "Token 78c258d07d5e62bed11ddc192524dc07af563b02"
             }
         }).then(
             function successCallback(response) {
                 $scope.response = response;
                 if (response.data['is_used'] === true) {
-                    $http.get("http://127.0.0.1:8000/api/fort/" + response.data['fortune_word'], {
+                    $http.get("http://underfl0w.nl:8000/api/fort/" + response.data['fortune_word'], {
                         headers: {
-                            "Authorization": "Token 4cdf0ff1ce73836573336b63f912a4fe00b7fb44"
+                            "Authorization": "Token 78c258d07d5e62bed11ddc192524dc07af563b02"
                         }
                     }).then(
                         function successCallback(response) {

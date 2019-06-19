@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onFailure(Call<PATCH> call, Throwable t) {
                 Log.e("Barcode",t.getMessage());
-                Log.e("ha","nnfdf");
+                Log.e("ha","This just died");
 
             }
         });
